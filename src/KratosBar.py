@@ -1,6 +1,4 @@
 import numpy as np
-import os
-from pathlib import Path
 import KratosMultiphysics
 import KratosMultiphysics.OptimizationApplication as KratosOA
 from KratosMultiphysics.StructuralMechanicsApplication.structural_mechanics_analysis import StructuralMechanicsAnalysis
@@ -15,11 +13,6 @@ from KratosMultiphysics.StructuralMechanicsApplication.structural_mechanics_anal
 class CustomAnalysisStage(StructuralMechanicsAnalysis):
     def Reset(self) -> None:
         self.continue_running = True
-
-    # def KeepAdvancingSolutionLoop(self) -> bool:
-    #     if self.continue_running:
-    #         self.continue_running = False
-    #         return True
 
 class Kratos:
     def __init__(self, project_parameters: KratosMultiphysics.Parameters) -> None:
@@ -64,27 +57,3 @@ class Kratos:
 
     def Finalize(self) -> None:
         self.analysis.Finalize()
-
-
-# if __name__ == "__main__":
-#     curr_path = Path(os.curdir).absolute()
-
-#     os.chdir("test")
-
-#     with open("beam_test_parameters.json", "r") as file_input:
-#         parameters = KratosMultiphysics.Parameters(file_input.read())
-
-#     kratos = Kratos(parameters)
-
-#     kratos.Initialize()
-
-#     numpy_vector = kratos.solution(10.0)
-#     print(numpy_vector)
-
-#     numpy_vector = kratos.solution(11.0)
-
-#     print(numpy_vector)
-
-#     kratos.Finalize()
-
-#     os.chdir(curr_path.absolute())
