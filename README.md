@@ -1,4 +1,4 @@
-# UQKratosServer
+# Bar 1D UMBridge server using KratosMultiphysics
 
 This file presents the black box FEM solver for UQ quantification problems serving the [statFEM.jl](https://github.com/jpthiele/statFEM.jl) client. The selected interface is [UM-Bridge](https://um-bridge-benchmarks.readthedocs.io/en/docs/) for connecting the FEM solver ([*Kratos*](https://github.com/KratosMultiphysics/Kratos)) and the UQ server. 
 
