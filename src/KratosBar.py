@@ -2,6 +2,7 @@ import numpy as np
 import KratosMultiphysics
 import KratosMultiphysics.OptimizationApplication as KratosOA
 from KratosMultiphysics.StructuralMechanicsApplication.structural_mechanics_analysis import StructuralMechanicsAnalysis
+import KratosMultiphysics.StructuralMechanicsApplication as KSM
 
 
 ''' This class embedeeds the FEM solver. It takes as input the vector comprehending elasticity modulus samples and it gives as an output
@@ -14,6 +15,17 @@ class CustomAnalysisStage(StructuralMechanicsAnalysis):
     def Reset(self) -> None:
         self.continue_running = True
 
+    def SetNormalForce(self, normal_force: float) -> None:
+        self.normal_force = normal_force
+
+    def ChangeMaterialProperties(self) -> None:
+        if not hasattr(self, "normal_force"):
+            return
+
+        load_model_part = self.model["Structure.PointLoad3D_Load_on_points_Auto1"]
+        for condition in load_model_part.Conditions:
+            condition.SetValue(KSM.POINT_LOAD_X, self.normal_force * 1e5)
+
 class Kratos:
     def __init__(self, project_parameters: KratosMultiphysics.Parameters) -> None:
         self.model = KratosMultiphysics.Model()
@@ -23,16 +35,13 @@ class Kratos:
         self.analysis.Initialize()
 
     ### Solution of the FEM problem
-    def solution(self, youngs_modulus: float) -> np.ndarray:
+    def solution(self, normal_force: float) -> np.ndarray:
         model_part: KratosMultiphysics.ModelPart = self.analysis._GetSolver().GetComputingModelPart()
 
         # this creates seperate properties per each element.
         KratosOA.OptimizationUtils.CreateEntitySpecificPropertiesForContainer(model_part, model_part.Elements, False)
 
-        # assign the Youngs modulus
-        e_exp = KratosMultiphysics.Expression.ElementExpression(model_part)
-        KratosMultiphysics.Expression.LiteralExpressionIO.SetData(e_exp, youngs_modulus * 1e9)
-        KratosOA.PropertiesVariableExpressionIO.Write(e_exp, KratosMultiphysics.YOUNG_MODULUS)
+        self.analysis.SetNormalForce(normal_force)
 
         # run the simulation
         self.analysis.Reset()

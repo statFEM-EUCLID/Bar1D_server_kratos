@@ -26,8 +26,8 @@ class BarModel(umbridge.Model):
 
     def __call__(self, parameters, config):
 
-        E = np.array(parameters[0], dtype=float)
-        posterior = self.kratos.solution(E)
+        F = np.array(parameters[0][0], dtype=float)
+        posterior = self.kratos.solution(F)
 
         return [posterior.astype(float).tolist()]
 
